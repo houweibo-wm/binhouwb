@@ -63,21 +63,21 @@ f(X=k) = \frac {C_K^k \times C_{N-K}^{n-k}}{C_N^n}
 </ol>
 <pre class="r"><code>x_dhyper &lt;- seq(0, 40, by = 1)
 plot(dhyper(x_dhyper, m = 50, n = 20, k = 30), type = &#39;l&#39;)</code></pre>
-<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2021-r-python/hyper_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
 <ol start="2" style="list-style-type: decimal">
 <li>Hypergeometric Cumulative Distribution Function (phyper Function)</li>
 </ol>
 <pre class="r"><code>x_phyper &lt;- seq(0, 20, by = 1) 
 y_phyper &lt;- phyper(x_phyper, m = 50, n = 20, k = 30)
 plot(y_phyper, type = &#39;l&#39;) </code></pre>
-<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-2-1.png" width="480" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2021-r-python/hyper_files/figure-html/unnamed-chunk-2-1.png" width="480" style="display: block; margin: auto;" /></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Hypergeometric Quantile Function (qhyper Function)</li>
 </ol>
 <pre class="r"><code>x_qhyper &lt;- seq(0, 1, by = 0.01) 
 y_qhyper &lt;- qhyper(x_qhyper, m = 50, n = 20, k = 30)
 plot(y_qhyper) </code></pre>
-<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-3-1.png" width="480" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2021-r-python/hyper_files/figure-html/unnamed-chunk-3-1.png" width="480" style="display: block; margin: auto;" /></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Generating Random Numbers (rhyper Function)</li>
 </ol>
@@ -85,7 +85,7 @@ plot(y_qhyper) </code></pre>
 N &lt;- 10000
 y_rhyper &lt;- rhyper(N, m = 50, n = 20, k = 30)
 hist(y_rhyper, breaks = 70, main = &quot;rhpyer&quot;)</code></pre>
-<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;" /></p>
+<p><img src="/post/2021-r-python/hyper_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="python" class="section level2">
@@ -101,12 +101,12 @@ s = np.random.hypergeometric(10,20,5,size=1000000)
 p = sum(s&gt;=4)/1000000.
 # print(p)
 plt.hist(s ,bins=20,color=&#39;k&#39;,alpha=0.3)</code></pre>
-<pre><code>## (array([108883.,      0.,      0.,      0., 339809.,      0.,      0.,
-##             0., 360569.,      0.,      0.,      0., 159597.,      0.,
-##             0.,      0.,  29318.,      0.,      0.,   1824.]), array([0.  , 0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 ,
+<pre><code>## (array([108687.,      0.,      0.,      0., 339666.,      0.,      0.,
+##             0., 360096.,      0.,      0.,      0., 160022.,      0.,
+##             0.,      0.,  29692.,      0.,      0.,   1837.]), array([0.  , 0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 ,
 ##        2.75, 3.  , 3.25, 3.5 , 3.75, 4.  , 4.25, 4.5 , 4.75, 5.  ]), &lt;a list of 20 Patch objects&gt;)</code></pre>
 <pre class="python"><code>plt.show()</code></pre>
-<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/2021-r-python/hyper_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="生信中简单应用" class="section level2">
 <h2>4. 生信中简单应用</h2>
