@@ -123,7 +123,7 @@ plt.show()
 之前一直见到veen图两个集合之间计算的p值，比如 
 
 
-![](veen.jpg)
+![](https://github.com/houweibo-wm/binhouwb/blob/main/content/post/2021-r-python/veen.jpg?raw=true)
 
 
 那么集合overlap之间的差异显著性如何计算呢？
