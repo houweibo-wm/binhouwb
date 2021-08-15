@@ -99,6 +99,8 @@ hist(y_rhyper, breaks = 70, main = "rhpyer")
 
 ## 3. python
 
+<br>
+
 ```{python}
 import numpy as np
 import matplotlib.pyplot as plt
@@ -120,9 +122,9 @@ plt.show()
 
 之前一直见到veen图两个集合之间计算的p值，比如 
 
-```{r echo=FALSE}
-knitr::include_graphics("veen.PNG")
-```
+
+![](veen.jpg)
+
 
 那么集合overlap之间的差异显著性如何计算呢？
 

@@ -90,6 +90,7 @@ hist(y_rhyper, breaks = 70, main = &quot;rhpyer&quot;)</code></pre>
 </div>
 <div id="python" class="section level2">
 <h2>3. python</h2>
+<p><br></p>
 <pre class="python"><code>import numpy as np
 import matplotlib.pyplot as plt
 # 超几何分布 hypergeometric(ngood, nbad, nsample, size=None) 好的总数、坏的总数、每次采样数、试验次数
@@ -100,9 +101,9 @@ s = np.random.hypergeometric(10,20,5,size=1000000)
 p = sum(s&gt;=4)/1000000.
 # print(p)
 plt.hist(s ,bins=20,color=&#39;k&#39;,alpha=0.3)</code></pre>
-<pre><code>## (array([108714.,      0.,      0.,      0., 340643.,      0.,      0.,
-##             0., 359604.,      0.,      0.,      0., 159934.,      0.,
-##             0.,      0.,  29373.,      0.,      0.,   1732.]), array([0.  , 0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 ,
+<pre><code>## (array([108883.,      0.,      0.,      0., 339809.,      0.,      0.,
+##             0., 360569.,      0.,      0.,      0., 159597.,      0.,
+##             0.,      0.,  29318.,      0.,      0.,   1824.]), array([0.  , 0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 ,
 ##        2.75, 3.  , 3.25, 3.5 , 3.75, 4.  , 4.25, 4.5 , 4.75, 5.  ]), &lt;a list of 20 Patch objects&gt;)</code></pre>
 <pre class="python"><code>plt.show()</code></pre>
 <p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
@@ -113,7 +114,7 @@ plt.hist(s ,bins=20,color=&#39;k&#39;,alpha=0.3)</code></pre>
 <div id="用于对veen图两个圈的overlap进行显著性检验" class="section level3">
 <h3>4.1 用于对veen图两个圈的overlap进行显著性检验</h3>
 <p>之前一直见到veen图两个集合之间计算的p值，比如</p>
-<p><img src="veen.PNG" width="302" /></p>
+<p><img src="veen.jpg" /></p>
 <p>那么集合overlap之间的差异显著性如何计算呢？</p>
 <p>假设有1000个基因，其中700个是与合子基因组激活(ZGA)相关的基因，剩下的300个不是，现在从中随机抽取500个，有400个是ZGA基因，则这样的事件是否显著呢？</p>
 <pre class="r"><code># q为k
