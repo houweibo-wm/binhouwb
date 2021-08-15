@@ -1,0 +1,136 @@
+---
+title: 超几何分布R/python
+author: Hou Weibo
+date: '2021-08-12'
+slug: []
+categories:
+  - 统计学
+tags:
+  - R
+  - python
+  - 超几何分布
+description: ''
+math: yes
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="超几何分布" class="section level2">
+<h2>1. 超几何分布</h2>
+<p><br></p>
+<p><a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">参考Hypergeometric distribution</a></p>
+<p><br></p>
+<div id="基础" class="section level3">
+<h3>1.1 基础</h3>
+<p>超几何分布(Hypergeometric distribution)，统计学中的一种离散概率分布。它描述了由有限个对象中抽出<span class="math inline">\({\mathit n}\)</span>个对象，成功抽出<span class="math inline">\({\mathit k}\)</span>次指定种类的对象的概率。</p>
+<p>例如，有<span class="math inline">\({\mathit N}\)</span>个样本，其中<span class="math inline">\({\mathit K}\)</span>是合格的。超几何分布描述了在<span class="math inline">\({\mathit N}\)</span>个样本中随机抽取<span class="math inline">\({\mathit n}\)</span>个， 其中<span class="math inline">\({\mathit k}\)</span>个是合格的概率：</p>
+<p><span class="math display">\[
+f(X=k) = \frac {C_K^k \times C_{N-K}^{n-k}}{C_N^n}
+\]</span>
+若随机变量<span class="math inline">\({\mathit X}\)</span>服从参数为<span class="math inline">\({\mathit n}\)</span>, <span class="math inline">\({\mathit K}\)</span>, <span class="math inline">\({\mathit N}\)</span>的超几何分布，则表示为<span class="math inline">\(X \sim{H(n, K, N)}\)</span>。如果<span class="math inline">\({\mathit n} = 1\)</span>, 超几何分布退化为二项分布。</p>
+<p><br></p>
+</div>
+<div id="特征" class="section level3">
+<h3>1.2 特征</h3>
+<ul>
+<li><p>超几何分布试验结果的概率会随着每一次试验的发生而改变</p></li>
+<li><p>无放回抽样</p></li>
+<li><p><span class="math inline">\({\mathit k}\)</span>的取值范围为<span class="math inline">\(\{max(0, n + K - N ),...,min(n, K)\}\)</span>, 其期望和方差为：<span class="math inline">\({E(k) = n\frac{K}{N}}\)</span>, <span class="math inline">\({Var(k) = n\frac{K}{N}\frac{N-K}{N}\frac{N-n}{N-1}}\)</span></p></li>
+<li><p>如果样本总体<span class="math inline">\({N}\)</span>为无穷大(也即将<em>有限总体换成无限总体</em>)，此时是否放回抽中的样本对于质量合格样本所占比例没有影响，超几何分布也可视为二项分布。在实际应用中，只要样本总体的数目是抽取数目的10倍以上(即<span class="math inline">\({N&gt;10^n}\)</span>)，就可用二项分布来近似描述超几何分布，通过两种概率质量函数计算得到的概率几乎相同</p></li>
+</ul>
+</div>
+</div>
+<div id="r" class="section level2">
+<h2>2. R</h2>
+<p><br></p>
+<div id="函数简介" class="section level3">
+<h3>2.1 函数简介</h3>
+<p>R语言中关于超几何分布的函数:</p>
+<ul>
+<li><p>dhyper(x, m, n, k, log = FALSE):分布函数</p></li>
+<li><p>phyper(q, m, n, k, lower.tail = TRUE, log.p = FALSE):概率函数</p></li>
+<li><p>qhyper(p, m, n, k, lower.tail = TRUE, log.p = FALSE): 分位数函数</p></li>
+<li><p>rhyper(nn, m, n, k): 返回每组抽中质量合格样本的个数</p></li>
+</ul>
+<p>这四个函数都有m、n和k参数，分别对应于超几何分布中的质量合格数目m、不合格数目N-m和抽取数目n。</p>
+<p><br></p>
+</div>
+<div id="函数示例" class="section level3">
+<h3>2.2 函数示例</h3>
+<ol style="list-style-type: decimal">
+<li>Hypergeometric Density in R (dhyper Function)</li>
+</ol>
+<pre class="r"><code>x_dhyper &lt;- seq(0, 40, by = 1)
+plot(dhyper(x_dhyper, m = 50, n = 20, k = 30), type = &#39;l&#39;)</code></pre>
+<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-1-1.png" width="480" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Hypergeometric Cumulative Distribution Function (phyper Function)</li>
+</ol>
+<pre class="r"><code>x_phyper &lt;- seq(0, 20, by = 1) 
+y_phyper &lt;- phyper(x_phyper, m = 50, n = 20, k = 30)
+plot(y_phyper, type = &#39;l&#39;) </code></pre>
+<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-2-1.png" width="480" style="display: block; margin: auto;" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Hypergeometric Quantile Function (qhyper Function)</li>
+</ol>
+<pre class="r"><code>x_qhyper &lt;- seq(0, 1, by = 0.01) 
+y_qhyper &lt;- qhyper(x_qhyper, m = 50, n = 20, k = 30)
+plot(y_qhyper) </code></pre>
+<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-3-1.png" width="480" style="display: block; margin: auto;" /></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Generating Random Numbers (rhyper Function)</li>
+</ol>
+<pre class="r"><code>set.seed(100)
+N &lt;- 10000
+y_rhyper &lt;- rhyper(N, m = 50, n = 20, k = 30)
+hist(y_rhyper, breaks = 70, main = &quot;rhpyer&quot;)</code></pre>
+<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="python" class="section level2">
+<h2>3. python</h2>
+<pre class="python"><code>import numpy as np
+import matplotlib.pyplot as plt
+# 超几何分布 hypergeometric(ngood, nbad, nsample, size=None) 好的总数、坏的总数、每次采样数、试验次数
+# np.random.hypergeometric(10,20,5,size=4)
+# 在一个口袋中装有30个球，其中有10个红球，其余为白球，这些球除颜色外完全相同。游戏者一次从中摸出5个球。
+# 摸到至少4个红球就中一等奖，那么获一等奖的概率是多少？
+s = np.random.hypergeometric(10,20,5,size=1000000)
+p = sum(s&gt;=4)/1000000.
+# print(p)
+plt.hist(s ,bins=20,color=&#39;k&#39;,alpha=0.3)</code></pre>
+<pre><code>## (array([108714.,      0.,      0.,      0., 340643.,      0.,      0.,
+##             0., 359604.,      0.,      0.,      0., 159934.,      0.,
+##             0.,      0.,  29373.,      0.,      0.,   1732.]), array([0.  , 0.25, 0.5 , 0.75, 1.  , 1.25, 1.5 , 1.75, 2.  , 2.25, 2.5 ,
+##        2.75, 3.  , 3.25, 3.5 , 3.75, 4.  , 4.25, 4.5 , 4.75, 5.  ]), &lt;a list of 20 Patch objects&gt;)</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="/post/2021-08-12r-python/hyper_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="生信中简单应用" class="section level2">
+<h2>4. 生信中简单应用</h2>
+<p><br></p>
+<div id="用于对veen图两个圈的overlap进行显著性检验" class="section level3">
+<h3>4.1 用于对veen图两个圈的overlap进行显著性检验</h3>
+<p>之前一直见到veen图两个集合之间计算的p值，比如</p>
+<p><img src="veen.PNG" width="302" /></p>
+<p>那么集合overlap之间的差异显著性如何计算呢？</p>
+<p>假设有1000个基因，其中700个是与合子基因组激活(ZGA)相关的基因，剩下的300个不是，现在从中随机抽取500个，有400个是ZGA基因，则这样的事件是否显著呢？</p>
+<pre class="r"><code># q为k
+# m为K
+# n为N-K
+# k为n
+phyper(400-1, 700, 300, 500, lower.tail = F)</code></pre>
+<pre><code>## [1] 3.007678e-12</code></pre>
+</div>
+<div id="go富集分析" class="section level3">
+<h3>4.2 GO富集分析</h3>
+<p>参考的是生信技能树的文章，如下：
+<a href="https://mp.weixin.qq.com/s/3K8eT7N7RHBff8p4_UU8dQ">https://mp.weixin.qq.com/s/3K8eT7N7RHBff8p4_UU8dQ</a></p>
+</div>
+</div>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
+<p>[1] <a href="https://www.jianshu.com/p/4925b1c74963">https://www.jianshu.com/p/4925b1c74963</a></p>
+<p>[2] <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a></p>
+</div>

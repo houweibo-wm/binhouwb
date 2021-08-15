@@ -1,4 +1,4 @@
-DefaultContentLanguage: en
+DefaultContentLanguage: en-us
 author: Houwb
 baseURL: https://houwb-blog.netlify.app/
 copyright: Copyright © 2008–2021
@@ -7,7 +7,7 @@ enableInlineShortcodes: yes
 footnoteReturnLinkContents: ^
 googleAnalytics: UA-FAKE
 hasCJKLanguage: yes
-languageCode: en
+languageCode: en-us
 theme: hugo-theme-tokiwa
 title: Houwb blog
 markup:

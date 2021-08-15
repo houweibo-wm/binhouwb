@@ -13,7 +13,7 @@ title: About
 
 blog based blogdown + github + hugo + netlify:
 
-  * [blogdown书籍](https://bookdown.org/yihui/blogdown/)
+* [blogdown书籍](https://bookdown.org/yihui/blogdown/)
 
 * [Netlify](https://app.netlify.com/)
 
@@ -24,8 +24,9 @@ blog based blogdown + github + hugo + netlify:
 * [my github](https://github.com/houweibo-wm)
 
 ## books and useful web links
+### 1. R languange related website
 
-更新中......
+* [rdrr.io R包检索和在线运行R](https://rdrr.io/)
 
 
 
