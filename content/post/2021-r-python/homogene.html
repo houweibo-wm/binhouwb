@@ -1,0 +1,296 @@
+---
+title: 快速查找物种之间的同源基因
+author: Hou Weibo
+date: '2021-08-16'
+slug: []
+categories:
+  - 生物信息
+tags:
+  - R
+  - 同源基因
+description: ''
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<p>在这里介绍两种简单常用的方法，来搜索常见模式物种的同源基因。一些研究较少的物种，可以通过blast等方法进行同源基因鉴定。</p>
+<div id="ncbi检索" class="section level2">
+<h2>1. NCBI检索</h2>
+<p><br></p>
+<p>以KDM3A基因为例，在NCBI中进行同源基因检索。这种方法不适用于批量进行检索，但是方便查到更多的信息。</p>
+<p><br></p>
+<p><img src="https://github.com/houweibo-wm/binhouwb/blob/main/content/post/2021-r-python/ncbi_homo1.png?raw=true" /></p>
+<p><br></p>
+<p><img src="https://github.com/houweibo-wm/binhouwb/blob/main/content/post/2021-r-python/ncbi_homo2.png?raw=true" /></p>
+</div>
+<div id="r-package-homologene" class="section level2">
+<h2>2. R package homologene</h2>
+<p><br></p>
+<p>首先看一下每个物种的物种号</p>
+<pre class="r"><code>if(!require(&#39;homologene&#39;)) install.packages(&#39;homologene&#39;)</code></pre>
+<pre><code>## 载入需要的程辑包：homologene</code></pre>
+<pre class="r"><code>library(homologene)
+knitr::kable(homologene::taxData, align = &#39;c&#39;, caption = &#39;物种号&#39;)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-1">Table 1: </span>物种号</caption>
+<thead>
+<tr class="header">
+<th align="center">tax_id</th>
+<th align="center">name_txt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">10090</td>
+<td align="center">Mus musculus</td>
+</tr>
+<tr class="even">
+<td align="center">10116</td>
+<td align="center">Rattus norvegicus</td>
+</tr>
+<tr class="odd">
+<td align="center">28985</td>
+<td align="center">Kluyveromyces lactis</td>
+</tr>
+<tr class="even">
+<td align="center">318829</td>
+<td align="center">Magnaporthe oryzae</td>
+</tr>
+<tr class="odd">
+<td align="center">33169</td>
+<td align="center">Eremothecium gossypii</td>
+</tr>
+<tr class="even">
+<td align="center">3702</td>
+<td align="center">Arabidopsis thaliana</td>
+</tr>
+<tr class="odd">
+<td align="center">4530</td>
+<td align="center">Oryza sativa</td>
+</tr>
+<tr class="even">
+<td align="center">4896</td>
+<td align="center">Schizosaccharomyces pombe</td>
+</tr>
+<tr class="odd">
+<td align="center">4932</td>
+<td align="center">Saccharomyces cerevisiae</td>
+</tr>
+<tr class="even">
+<td align="center">5141</td>
+<td align="center">Neurospora crassa</td>
+</tr>
+<tr class="odd">
+<td align="center">6239</td>
+<td align="center">Caenorhabditis elegans</td>
+</tr>
+<tr class="even">
+<td align="center">7165</td>
+<td align="center">Anopheles gambiae</td>
+</tr>
+<tr class="odd">
+<td align="center">7227</td>
+<td align="center">Drosophila melanogaster</td>
+</tr>
+<tr class="even">
+<td align="center">7955</td>
+<td align="center">Danio rerio</td>
+</tr>
+<tr class="odd">
+<td align="center">8364</td>
+<td align="center">Xenopus (Silurana) tropicalis</td>
+</tr>
+<tr class="even">
+<td align="center">9031</td>
+<td align="center">Gallus gallus</td>
+</tr>
+<tr class="odd">
+<td align="center">9544</td>
+<td align="center">Macaca mulatta</td>
+</tr>
+<tr class="even">
+<td align="center">9598</td>
+<td align="center">Pan troglodytes</td>
+</tr>
+<tr class="odd">
+<td align="center">9606</td>
+<td align="center">Homo sapiens</td>
+</tr>
+<tr class="even">
+<td align="center">9615</td>
+<td align="center">Canis lupus familiaris</td>
+</tr>
+<tr class="odd">
+<td align="center">9913</td>
+<td align="center">Bos taurus</td>
+</tr>
+</tbody>
+</table>
+<p>接下来进行同源基因检索，以小鼠和人为例</p>
+<pre class="r"><code># 以人基因为例
+genelist&lt;-c(&quot;ACVR2B&quot;, &quot;ALCAM&quot;, &quot;ARID1B&quot;, &quot;ARS2&quot;, &quot;ASH2L&quot;, &quot;AXIN2&quot;)
+# 使用homologene函进行转换
+# genelist是要转换的基因列表
+# inTax是输入的基因列表所属的物种号，9606是人
+# outTax是要转换成的物种号，10090是小鼠
+# 输出的是结果是Ensembl ID(NCBI gene ID)
+homo &lt;- homologene(genelist, inTax = 9606, outTax = 10090)
+knitr::kable(homo, align = &#39;c&#39;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="center">9606</th>
+<th align="center">10090</th>
+<th align="center">9606_ID</th>
+<th align="center">10090_ID</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">ACVR2B</td>
+<td align="center">Acvr2b</td>
+<td align="center">93</td>
+<td align="center">11481</td>
+</tr>
+<tr class="even">
+<td align="center">ALCAM</td>
+<td align="center">Alcam</td>
+<td align="center">214</td>
+<td align="center">11658</td>
+</tr>
+<tr class="odd">
+<td align="center">ARID1B</td>
+<td align="center">Arid1b</td>
+<td align="center">57492</td>
+<td align="center">239985</td>
+</tr>
+<tr class="even">
+<td align="center">ASH2L</td>
+<td align="center">Ash2l</td>
+<td align="center">9070</td>
+<td align="center">23808</td>
+</tr>
+<tr class="odd">
+<td align="center">AXIN2</td>
+<td align="center">Axin2</td>
+<td align="center">8313</td>
+<td align="center">12006</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># 此外，对于常见的物种，也有特定的函数进行转换
+# R makrdown 中eval=F,显示而不运行代码
+mouse2human()
+human2mouse()</code></pre>
+<p><br></p>
+</div>
+<div id="biomart" class="section level2">
+<h2>3. BioMart</h2>
+<p><br></p>
+<p>如果想了解有关于该基因的详细信息如何解决，比如基因座，正负链信息，Ensemble gene symbol？</p>
+<p>一种方法是使用在线的Ensemble BioMart进行相关特征的分析，另一种方法是使用R包biomaRt。R包的缺陷是有时候更新跟不上。</p>
+<p>贴上BioMart的链接: <a href="http://asia.ensembl.org/biomart/martview/0460da2cf5aa937c5dd234d4484bd0c0">http://asia.ensembl.org/biomart/martview/0460da2cf5aa937c5dd234d4484bd0c0</a></p>
+<p><br></p>
+<p>R package<a href="https://m.ensembl.org/info/data/biomart/biomart_r_package.html">参考链接</a></p>
+<pre class="r"><code>if (!requireNamespace(&quot;BiocManager&quot;, quietly = TRUE))
+    install.packages(&quot;BiocManager&quot;)
+# BiocManager::install(&quot;biomaRt&quot;)
+library(biomaRt)
+# 以人举个简单的例子，具体参考上面网址，个人还是觉得在线版好用
+ensembl = useEnsembl(biomart=&quot;ensembl&quot;, dataset=&quot;hsapiens_gene_ensembl&quot;)</code></pre>
+<pre><code>## Ensembl site unresponsive, trying uswest mirror</code></pre>
+<pre class="r"><code>geen_attr &lt;- c(&#39;ensembl_gene_id&#39;, &#39;hgnc_symbol&#39;, &#39;chromosome_name&#39;, &#39;start_position&#39;, &#39;end_position&#39;, &#39;strand&#39;)
+gene &lt;- as.character(homo$`9606_ID`)
+gene_list_info &lt;- getBM(attributes = geen_attr, 
+                    filters = &#39;entrezgene_id&#39;, 
+                    values = gene, 
+                    mart = ensembl)
+
+knitr::kable(gene_list_info, align = &#39;c&#39;)</code></pre>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="15%" />
+<col width="20%" />
+<col width="18%" />
+<col width="16%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">ensembl_gene_id</th>
+<th align="center">hgnc_symbol</th>
+<th align="center">chromosome_name</th>
+<th align="center">start_position</th>
+<th align="center">end_position</th>
+<th align="center">strand</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">ENSG00000170017</td>
+<td align="center">ALCAM</td>
+<td align="center">3</td>
+<td align="center">105366909</td>
+<td align="center">105576900</td>
+<td align="center">1</td>
+</tr>
+<tr class="even">
+<td align="center">ENSG00000049618</td>
+<td align="center">ARID1B</td>
+<td align="center">6</td>
+<td align="center">156776020</td>
+<td align="center">157210779</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">ENSG00000168646</td>
+<td align="center">AXIN2</td>
+<td align="center">17</td>
+<td align="center">65528563</td>
+<td align="center">65561648</td>
+<td align="center">-1</td>
+</tr>
+<tr class="even">
+<td align="center">ENSG00000129691</td>
+<td align="center">ASH2L</td>
+<td align="center">8</td>
+<td align="center">38105493</td>
+<td align="center">38144076</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">ENSG00000114739</td>
+<td align="center">ACVR2B</td>
+<td align="center">3</td>
+<td align="center">38453890</td>
+<td align="center">38493142</td>
+<td align="center">1</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># biomaRt中的一些有用函数
+ensembl = useEnsembl(biomart=&quot;ensembl&quot;, dataset=&quot;hsapiens_gene_ensembl&quot;)
+# 获取Ensembl mart
+listEnsembl()
+
+# Ensembl archive version
+listEnsembl(&quot;GRCh=37&quot;)
+listEnsembl(version=78)
+
+# Datasets
+listDatasets(ensembl)
+
+# Filters
+listFilters(ensembl)
+
+# Attritbute
+listAttributes(ensembl)</code></pre>
+</div>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
+<p>[1] <a href="https://m.ensembl.org/info/data/biomart/biomart_r_package.html">biomaRt package</a></p>
+<p>[2] <a href="https://www.ncbi.nlm.nih.gov/">NCBI</a></p>
+<p>[3] <a href="https://github.com/oganm/homologene">homologene</a></p>
+</div>

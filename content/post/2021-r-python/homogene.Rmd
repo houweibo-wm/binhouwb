@@ -1,0 +1,121 @@
+---
+title: 快速查找物种之间的同源基因
+author: Hou Weibo
+date: '2021-08-16'
+slug: []
+categories:
+  - 生物信息
+tags:
+  - R
+  - 同源基因
+description: ''
+---
+
+在这里介绍两种简单常用的方法，来搜索常见模式物种的同源基因。一些研究较少的物种，可以通过blast等方法进行同源基因鉴定。
+
+## 1. NCBI检索
+
+<br>
+
+以KDM3A基因为例，在NCBI中进行同源基因检索。这种方法不适用于批量进行检索，但是方便查到更多的信息。
+
+<br>
+
+![](https://github.com/houweibo-wm/binhouwb/blob/main/content/post/2021-r-python/ncbi_homo1.png?raw=true)
+
+<br>
+
+![](https://github.com/houweibo-wm/binhouwb/blob/main/content/post/2021-r-python/ncbi_homo2.png?raw=true)
+
+## 2. R package homologene
+
+<br>
+
+首先看一下每个物种的物种号
+```{r}
+if(!require('homologene')) install.packages('homologene')
+library(homologene)
+knitr::kable(homologene::taxData, align = 'c', caption = '物种号')
+
+```
+
+接下来进行同源基因检索，以小鼠和人为例
+```{r}
+# 以人基因为例
+genelist<-c("ACVR2B", "ALCAM", "ARID1B", "ARS2", "ASH2L", "AXIN2")
+# 使用homologene函进行转换
+# genelist是要转换的基因列表
+# inTax是输入的基因列表所属的物种号，9606是人
+# outTax是要转换成的物种号，10090是小鼠
+# 输出的是结果是Ensembl ID(NCBI gene ID)
+homo <- homologene(genelist, inTax = 9606, outTax = 10090)
+knitr::kable(homo, align = 'c')
+```
+
+```{r, eval=FALSE}
+# 此外，对于常见的物种，也有特定的函数进行转换
+# R makrdown 中eval=F,显示而不运行代码
+mouse2human()
+human2mouse()
+```
+
+<br>
+
+## 3. BioMart
+
+<br>
+
+如果想了解有关于该基因的详细信息如何解决，比如基因座，正负链信息，Ensemble gene symbol？
+
+一种方法是使用在线的Ensemble BioMart进行相关特征的分析，另一种方法是使用R包biomaRt。R包的缺陷是有时候更新跟不上。
+
+贴上BioMart的链接: [http://asia.ensembl.org/biomart/martview/0460da2cf5aa937c5dd234d4484bd0c0](http://asia.ensembl.org/biomart/martview/0460da2cf5aa937c5dd234d4484bd0c0)
+
+<br>
+
+R package[参考链接](https://m.ensembl.org/info/data/biomart/biomart_r_package.html)
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+# BiocManager::install("biomaRt")
+library(biomaRt)
+# 以人举个简单的例子，具体参考上面网址，个人还是觉得在线版好用
+ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+geen_attr <- c('ensembl_gene_id', 'hgnc_symbol', 'chromosome_name', 'start_position', 'end_position', 'strand')
+gene <- as.character(homo$`9606_ID`)
+gene_list_info <- getBM(attributes = geen_attr, 
+                    filters = 'entrezgene_id', 
+                    values = gene, 
+                    mart = ensembl)
+
+knitr::kable(gene_list_info, align = 'c')
+```
+
+```{r, eval=FALSE}
+# biomaRt中的一些有用函数
+ensembl = useEnsembl(biomart="ensembl", dataset="hsapiens_gene_ensembl")
+# 获取Ensembl mart
+listEnsembl()
+
+# Ensembl archive version
+listEnsembl("GRCh=37")
+listEnsembl(version=78)
+
+# Datasets
+listDatasets(ensembl)
+
+# Filters
+listFilters(ensembl)
+
+# Attritbute
+listAttributes(ensembl)
+```
+
+## Reference
+
+[1] [biomaRt package](https://m.ensembl.org/info/data/biomart/biomart_r_package.html)
+
+[2] [NCBI](https://www.ncbi.nlm.nih.gov/)
+
+[3] [homologene](https://github.com/oganm/homologene)
