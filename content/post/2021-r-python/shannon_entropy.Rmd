@@ -1,0 +1,94 @@
+---
+title: python计算碱基序列香农熵
+author: Hou Weibo
+date: '2021-08-19'
+slug: []
+categories:
+  - 生物信息
+tags:
+  - python
+  - 香农熵
+description: ''
+---
+
+熵或信息熵是信息论的基本量，是对自我信息水平的期望值。熵是克劳德·香农提出的，因此以他的名字命名。 
+
+信息量的度量和自身不确定性息息相关。在生物学中，DNA/RNA/蛋白序列的信息熵，可以衡量序列本身的复杂度，对于揭示一段序列的特征和功能具有一定的指导意义。
+
+## 1. 公式
+
+<br>
+
+熵的定义为信息的期望值，那么信息的定义是什么呢？如果待分类的事务可能划分在多个分类之中，则符号${x_i}$的信息定义为：
+$$
+I(x_i)= -\log_2(P(x_i))
+$$
+其中${P(x_i)}$是选择该分类的概率。
+
+那么信息熵的公式就可以定义如下：
+$$
+H = -\sum_{i=1}^nP(x_i)\log_2(P(x_i))
+$$
+此外，在已发表的文章[Analysis of DNA Sequence Information and Complexity](https://csce.ucmss.com/cr/books/2018/LFS/CSREA2018/BIC4100.pdf)中，作者介绍了香农熵的计算公式，与上述有一点区别，如下：
+$$
+C_{entropy} = -\sum_{i=1}^K(\frac{n_i}{N})\log_K(\frac{n_i}{N})
+$$
+
+## 2. python实现
+
+<br>
+
+这里罗列出两种计算方法，一种是已经造好的轮子-scipy， 另一种是python基础编程实现。首先自己造个轮子看看：
+```{python}
+# -*- coding: utf-8 -*-
+ 
+import collections
+import math
+ 
+def estimate_shannon_entropy(dna_sequence):
+    m = len(dna_sequence)
+    bases = collections.Counter([tmp_base for tmp_base in dna_sequence])
+ 
+    shannon_entropy_value = 0
+    for base in bases:
+        # number of residues
+        n_i = bases[base]
+        # n_i (# residues type i) / M (# residues in column)
+        p_i = n_i / float(m)
+        entropy_i = p_i * (math.log(p_i, 2))
+        shannon_entropy_value += entropy_i
+ 
+    return shannon_entropy_value * -1
+
+# 测试
+estimate_shannon_entropy('ATCAGTCAGTA')
+```
+
+此外，python scipy包中也有轮子可以直接用，如下：
+```{python}
+import collections
+ 
+from scipy.stats import entropy
+  
+def estimate_shannon_entropy(dna_sequence):
+    bases = collections.Counter([tmp_base for tmp_base in dna_sequence])
+    # define distribution
+    dist = [x/sum(bases.values()) for x in bases.values()]
+ 
+    # use scipy to calculate entropy
+    entropy_value = entropy(dist, base=2)
+ 
+    return entropy_value
+
+# 测试
+estimate_shannon_entropy('ATCAGTCAGTA')
+```
+
+那么，文章中的香农熵如何计算呢？很简单，只需要将第一个python脚本的log的底换为4即可，在此就不列出了。
+
+## Reference
+[1] [信息熵（香农熵）概述](https://www.omegaxyz.com/2018/05/07/information_entropy/)
+
+[2] [scipy](https://www.scipy.org/)
+
+[3] python相关书籍

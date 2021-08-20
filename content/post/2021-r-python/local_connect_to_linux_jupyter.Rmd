@@ -1,0 +1,46 @@
+---
+title: 本地如何访问远程linux服务器jupyter-notebook
+author: Hou Weibo
+date: '2021-08-20'
+slug: []
+categories:
+  - python
+tags:
+  - python
+  - jupyter-notebook
+description: ''
+---
+之前一直在windows上安装使用jupyter-notebook。但是发现一个问题，当使用的数据集过大，windows有些力不从心，并且创建的多个conda环境也导致消耗了计算机本身很多内存。所以，就探索了如何在windows本地访问远程linux服务器上的jupyter-notebook。
+
+## 1. 新建conda环境并安装python，jupyter-notebook
+
+<br>
+
+```{bash, eval = F}
+conda create -y tem python=3
+conda activate tem
+python3 -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple jupyter
+jupyter-notebook --no-browser
+```
+
+## 2. 运行jupyter-notebook
+
+<br>
+
+随后在远程服务器启动jupyter-notebook
+```{bash, eval=F}
+jupyter-notebook --no-browser
+```
+
+
+接下来，在windows上使用`Win + R`输入cmd启动命令行界面，运行以下命令(Mac直接调用命令行就可)：
+```{bash, eval=F}
+ssh -N -f -L localhost:8888:localhost:8888 username@xxx.xxx.xxx.xxx
+# 如果有root权限，将username改为root就可以
+```
+之后输入密码，在服务器上复制URL，粘贴到本地浏览器打开即可使用。
+
+## Reference
+[1] [https://cloud.tencent.com/developer/article/1649899](https://cloud.tencent.com/developer/article/1649899)
+
+[2] [jupyter-notebook](https://jupyter.org/)
