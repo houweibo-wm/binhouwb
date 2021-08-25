@@ -1,0 +1,156 @@
+---
+title: 使用chipseeker进行chip-seq peaks批量注释
+author: Hou Weibo
+date: '2021-08-25'
+slug: []
+categories:
+  - 生物信息
+tags:
+  - chipseeker
+  - chip
+description: ''
+---
+
+最近分析了一套上百个样本的chip测序数据，需要对其peaks进行基因组注释，首先想到了Y叔的CHIPseeker包，但是，总不能一个一个文件注释，然后再挨个出图看结果吧？所以，就基于tidyverse简单写了一个可以批量处理的函数，方便对其结果进一步分析，主要是产生汇总表，批量单个饼图等结果。
+
+tips: 我做的物种是小鼠，自然以小鼠作为演示。其他物种更换相应包和参数即可。
+
+## 1. 安装并加载R包
+
+<br>
+
+```{r，eval=F}
+# 首先安装所需要的的R package
+if(! require(CHIPseeker)) BiocManager::install("ChIPseeker")
+if(! require(TxDb.Mmusculus.UCSC.mm10.knownGene)) BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
+BiocManager::install("EnsDb.Mmusculus.v79")
+BiocManager::install('org.Mm.eg.db')
+```
+
+```{r, eval=FALSE}
+## 加载R package
+library(ChIPseeker)
+library(org.Mm.eg.db)
+library(EnsDb.Mmusculus.v79)
+library(TxDb.Mmusculus.UCSC.mm10.knownGene)
+library(clusterProfiler)
+library(tidyverse)
+library(magrittr)
+```
+
+## 2. 定义单个peaks 文件注释函数
+
+<br>
+
+接下来，就需要定义一个函数来处理单个peaks bed文件。我使用的是ENsembl小鼠的注释文件，如果需要使用USCS注释文件，需下载对应R数据包。
+```{r, eval=FALSE}
+# USCS
+txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
+# Ensembl
+edb <- EnsDb.Mmusculus.v79
+
+annotate.peak <- function(peakname, 
+                          chr=FALSE,
+                          tssRegion = c(-5000, 5000), 
+                          txdb=EnsDb.Mmusculus.v79,
+                          usens.anno=TRUE,
+                          annodb="org.Mm.eg.db"){
+  # @description: input peaks bed format file to annotate
+  # @description: parameter chr determines whether the chromosome looks like this: "chr1"
+  # @example tem <- annotate.peak(peakfilename)
+  # @output: pie plot and return a data frame conclude percent and number of peaks in genome annotation region 
+  
+  # read peak file
+  pre_peak <- read.csv(peakname, header = F, sep = '\t')
+  numpeak <- nrow(pre_peak)
+  # consider chromosomal format differences 
+  if(chr == FALSE){
+    pre_peak[, 1] <- paste0("chr", pre_peak[, 1])
+    tem_outfile <- paste0(peakname, "_bed")
+    write.table(pre_peak, tem_outfile, row.names = F, sep = '\t')
+  }
+  if(chr == TRUE) 
+    tem_outfile <- pre_peak 
+  # file.remove(pre_peak)
+  # annotation
+  if(usens.anno == TRUE)
+    seqlevelsStyle(txdb) <- "UCSC"
+  peak <- readPeakFile(tem_outfile)
+  peakAnno.edb <- annotatePeak(peak, tssRegion=tssRegion,
+                               TxDb=txdb, annoDb=annodb)
+  if(dir.exists('./plot/') == FALSE)
+    dir.create('./plot/')
+  pathout <- paste0(dirname(tem_outfile), '/plot/')
+  filename <- paste0(basename(tem_outfile), ".pdf")
+  # 
+  absolute.path <- paste0(pathout, filename)
+  
+  pdf(file = absolute.path,
+      width = 6,
+      height = 5)
+  plotAnnoPie(peakAnno.edb)
+  dev.off()
+  temdf <- peakAnno.edb@annoStat
+  temdf['num_peak'] <- round(temdf[, 2] /100 * numpeak, 0) 
+  # annotate.name <- list(temdf, dfname)[[1]]
+  # return(annotate.name)
+  return(temdf)
+}
+```
+
+## 3. 批量处理和结果
+
+<br>
+
+好了，现在我们已经实现了对于一个peaks bed文件的注释操作，是时候去解决好几十什么好几百好几千个样本了。其实这里也可以再次封装为函数，做到只传入一个文件夹就可以进行注释的目的。
+```{r, eval=FALSE}
+# 获取peaks 文件列表
+files <- list.files(path = './annotate_peak/', pattern = 'narrowPeak$')
+files <- paste0('./annotate_peak/', files)
+
+# peaks annotation
+peak_anno_list <- files %>% 
+  lapply(function(x){annotate.peak(x)})
+# “_”分割文件名，提取第一列
+list.names <- str_split(basename(files), "_", simplify = TRUE)[,1]
+# 合并多个peaks 注释数据框
+peak_anno_df <- peak_anno_list %>%
+  reduce(full_join, by = "Feature")
+# 修改colnames
+colnames_peak_anno <- c('Feature', 
+                        paste(rep(list.names, each = 2), rep(c('Frequency', 'num_peak'), length(list.names)), sep = '_'))
+```
+
+至此，批量注释peaks bed文件已经完成，简单看一下文件列表和注释结果，饼图就不展示了。
+```{r, eval=FALSE}
+# 文件列表
+[1] "2C-rep1_MAPQ2_peaks.narrowPeak" "2C-rep2_MAPQ2_peaks.narrowPeak"
+[3] "4C-rep1_MAPQ2_peaks.narrowPeak" "4C-rep2_MAPQ2_peaks.narrowPeak"
+[5] "4C-rep1_MAPQ2_peaks.narrowPeak"  "4C-rep2_MAPQ2_peaks.narrowPeak"
+
+# 注释结果,没有与上面对应，见谅
+ Feature            `MII-con-rep1_Fr~ `MII-con-rep1_n~ `MII-con-rep2_F~ `MII-con-rep2_n~
+   <chr>                          <dbl>            <dbl>            <dbl>            <dbl>
+ 1 Promoter (<=1kb)               6.8                513            6.41               440
+ 2 Promoter (1-2kb)               5.08               383            5.49               377
+ 3 Promoter (2-3kb)               4.68               353            4.61               316
+ 4 Promoter (3-4kb)               4.07               307            4.31               295
+ 5 Promoter (4-5kb)               4.2                317            3.63               249
+ 6 5' UTR                         0.08                 6            0.146               10
+ 7 3' UTR                         1.13                85            1.35                92
+ 8 Other Exon                     2.63               198            2.26               155
+ 9 1st Intron                     9.2                693            8.79               603
+10 Other Intron                  22.8               1716           21.9               1504
+11 Downstream (<=300)             0.133               10            0.146               10
+12 Distal Intergenic             39.2               2958           40.9               2809
+13 1st Exon                      NA                   NA           NA                   NA
+```
+
+总结一下，其实无论是CHIPseeker相关函数，还是其他R语言包中的函数，都可以按照这个思路进行批量的处理，进而达到目的。比如，合并多个csv文件到一个excel的不同sheet中，可以将多个csv存至list，使用writexl包直接输出；或者是按关键字合并等操作，可使用purrr包中的reduce系列函数进行操作等等。
+
+## Reference
+[1] [CHIPseeker](https://bioconductor.org/packages/release/bioc/vignettes/ChIPseeker/inst/doc/ChIPseeker.html)
+
+[2] [EnsDb.Mmusculus.v79](https://www.bioconductor.org/packages/release/data/annotation/html/EnsDb.Mmusculus.v79.html)
+
+[3] tidyverse 系列
