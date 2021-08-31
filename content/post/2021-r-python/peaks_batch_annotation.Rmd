@@ -70,7 +70,7 @@ annotate.peak <- function(peakname,
     write.table(pre_peak, tem_outfile, row.names = F, sep = '\t')
   }
   if(chr == TRUE) 
-    tem_outfile <- pre_peak 
+    tem_outfile <- peakname
   # file.remove(pre_peak)
   # annotation
   if(usens.anno == TRUE)
